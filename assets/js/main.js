@@ -1,23 +1,97 @@
-// Program to generate random strings
+// Global Variable used to store the quotes  
+// fetched from the API 
 
-const generateString = () => {
+var data;
+let front = true;
 
-    const length = parseInt(document.getElementById("length").value);
+// Getting the front and back author boxes 
+const authors = document.querySelectorAll(".author");
 
-    // Declare all characters
-    const characters = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`;
+// Getting the front and back texts
+const texts = document.querySelectorAll(".text");
 
-    const charactersLength = characters.length;
+// Getting the body 
+const body = document.getElementById("body");
 
-    let result = "";
+// Getting the buttons 
+const button = document.querySelectorAll(".new-quote");
 
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+const blockFront = document.querySelector(".block__front");
+const blockBack = document.querySelector(".block__back");
+
+const authorFront = authors[0];
+const authorBack = authors[1];
+
+const textFront = texts[0];
+const textBack = texts[1];
+
+const buttonFront = button[0];
+const buttonBack = button[1];
+
+
+// An arrow function used to get a quote randomly 
+const displayQuote = () => {
+
+    // Generates a random number between 0 and the length of the dataset.
+
+    let index = Math.floor(Math.random() * data.length);
+
+
+    // Stores the quote present at the randomly generated index 
+    let quote = data[index].text;
+
+    // Stores the author of the respective quote 
+    let author = data[index].author;
+
+
+    // If no author is present assign the author anonymous  
+
+    if (!author) {
+        author = "Anonymous"
     }
 
-    console.log(result);
 
-    document.getElementById("h4").innerHTML = result;
+    // Replacing the current quote and author with a new one 
+
+    if (front) {
+        // Changing the front if back-side is displayed 
+        textFront.innerHTML = quote;
+        authorFront.innerHTML = author;
+    }
+    else {
+        // Changing the back if front-side is displayed
+        textBack.innerHTML = quote;
+        authorBack.innerHTML = author;
+    }
+
+    front = !front;
 
 }
 
+// Fetching the quotes from the type.fit API using promises 
+
+fetch("https://type.fit/api/quotes")
+    .then((response) => {
+        return response.json()
+    }) // Getting the raw JSON data
+    .then((data) => {
+
+        // Storing the quotes internally upon  
+        // successful completion of request
+        this.data = data;
+
+        // Displaying the quote When the Webpage loads 
+        displayQuote();
+    });
+
+
+// Adding an onclick listener for the button 
+let newQuote = () => {
+
+    // Rotating the Quote Box 
+    blockBack.classList.toggle("rotateB");
+    blockFront.classList.toggle("rotateF");
+
+    // Displaying a new quote when the webpage loads 
+    displayQuote();
+}
